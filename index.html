@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UT Campuses</title>
+<meta name="description" content="A map-based history of the five University of Tennessee campuses: where they are, where they came from, and who they serve today.">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fbfaf7; --surface:#ffffff; --ink:#1d1d1f; --muted:#5d5d63; --line:#e3e0d9;
+  --orange:#d9661f; --orange-soft:#f6e3d6; --pre:#c9c4ba;
+  --knox:#d9661f; --chat:#2b5c8a; --martin:#3e7d4f; --south:#8a4f9e; --memphis:#b23a48;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#16161a; --surface:#1f1f24; --ink:#efece6; --muted:#a8a5a0; --line:#34333a;
+    --orange:#f08a46; --orange-soft:#3a2a20; --pre:#4a4850;
+    --knox:#f08a46; --chat:#6aa3d6; --martin:#74b886; --south:#bf8ad1; --memphis:#e07583;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 Inter,system-ui,sans-serif}
+h1,h2,h3{font-family:"Source Serif 4",Georgia,serif;line-height:1.2;margin:0 0 .5em}
+a{color:var(--orange)}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+header.hero{padding:72px 0 40px;border-bottom:1px solid var(--line)}
+.kicker{text-transform:uppercase;letter-spacing:.12em;font-size:12px;font-weight:600;color:var(--orange)}
+.hero h1{font-size:clamp(36px,6vw,60px);margin:.2em 0 .3em}
+.hero p.lede{font-size:19px;color:var(--muted);max-width:680px}
+.byline{font-size:14px;color:var(--muted);margin-top:18px}
+nav.toc{position:sticky;top:0;z-index:1000;background:var(--bg);border-bottom:1px solid var(--line)}
+nav.toc .wrap{display:flex;gap:20px;overflow-x:auto;padding-top:10px;padding-bottom:10px;font-size:14px}
+nav.toc a{color:var(--muted);text-decoration:none;white-space:nowrap}
+nav.toc a:hover{color:var(--ink)}
+section{padding:56px 0;border-bottom:1px solid var(--line)}
+section h2{font-size:32px}
+.intro{color:var(--muted);max-width:700px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-top:28px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px}
+.stat b{display:block;font:700 34px "Source Serif 4",serif}
+.stat span{color:var(--muted);font-size:14px}
+/* map */
+.tour{display:grid;grid-template-columns:1.4fr 1fr;gap:20px;margin-top:24px}
+#map{height:480px;border-radius:10px;border:1px solid var(--line)}
+.stop{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:22px;display:flex;flex-direction:column}
+.stop .num{font-size:13px;color:var(--muted)}
+.stop h3{font-size:26px;margin-top:4px}
+.stop .place{color:var(--muted);font-size:14px;margin-top:-6px;margin-bottom:12px}
+.stop .controls{margin-top:auto;display:flex;gap:10px;padding-top:16px}
+button{font:600 14px Inter,sans-serif;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:9px 14px;border-radius:8px;cursor:pointer}
+button.primary{background:var(--orange);border-color:var(--orange);color:#fff}
+button:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+.pin{width:30px;height:30px;border-radius:50%;color:#fff;font:700 14px Inter,sans-serif;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.pin.active{transform:scale(1.25)}
+/* campus cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;margin-top:28px}
+.card{background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--c);border-radius:10px;padding:22px}
+.card h3{font-size:22px;margin-bottom:2px}
+.card .sub{font-size:13px;color:var(--muted);margin-bottom:12px}
+.card dl{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:14px;margin:12px 0 0}
+.card dt{color:var(--muted)}
+.card dd{margin:0}
+.names{font-size:14px;border-left:2px solid var(--line);padding-left:12px;margin:12px 0}
+.names div{margin:2px 0}
+.names span{color:var(--muted);display:inline-block;min-width:92px}
+/* charts */
+.chart{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;margin-top:24px;overflow-x:auto}
+.chart svg{display:block;width:100%;min-width:560px;height:auto}
+.chart text{fill:var(--muted);font:12px Inter,sans-serif}
+.chart .lbl{fill:var(--ink);font-weight:600;font-size:13px}
+.legend{display:flex;gap:18px;font-size:13px;color:var(--muted);margin-top:10px;flex-wrap:wrap}
+.legend i{display:inline-block;width:22px;height:8px;border-radius:4px;margin-right:6px;vertical-align:middle}
+table{width:100%;border-collapse:collapse;font-size:15px;margin-top:20px}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line)}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.note{font-size:13px;color:var(--muted);margin-top:12px}
+ol.sources{font-size:14px;color:var(--muted);padding-left:20px}
+ol.sources li{margin:6px 0}
+footer{padding:36px 0 60px;font-size:13px;color:var(--muted)}
+@media (max-width:760px){
+  .tour{grid-template-columns:1fr}
+  #map{height:360px}
+  header.hero{padding-top:44px}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">A digital humanities map project</div>
+    <h1>One University, Five Campuses</h1>
+    <p class="lede">The University of Tennessee System stretches about 350 miles, from the Smoky Mountain foothills to the Mississippi River. Each of its five campuses began as something else: a frontier college, a Methodist women's school, a Baptist institute. This project maps where they are, when they joined UT, and how many students they serve today.</p>
+    <div class="byline">By Shanquez Dobbins · Revised November 2026 · Data as of Fall 2025</div>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Sections">
+  <div class="wrap">
+    <a href="#overview">Overview</a>
+    <a href="#tour">Map tour</a>
+    <a href="#campuses">Campuses</a>
+    <a href="#timeline">Timeline</a>
+    <a href="#enrollment">Enrollment</a>
+    <a href="#leadership">Leadership</a>
+    <a href="#sources">Sources</a>
+  </div>
+</nav>
+
+<main>
+<section id="overview">
+  <div class="wrap">
+    <h2>The system at a glance</h2>
+    <p class="intro">UT is a statewide system. Five campuses each have their own chancellor, all reporting to the UT System president. Only Knoxville was part of UT from the start. Each of the other four joined later, by merger, by state takeover, or by acquisition, between 1911 and 2021.</p>
+    <div class="stats">
+      <div class="stat"><b>64,866</b><span>students systemwide, Fall 2025 (a record)</span></div>
+      <div class="stat"><b>5</b><span>campuses with their own chancellors</span></div>
+      <div class="stat"><b>1794</b><span>oldest root: Blount College, Knoxville</span></div>
+      <div class="stat"><b>2021</b><span>newest member: UT Southern, Pulaski</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="tour">
+  <div class="wrap">
+    <h2>Map tour: east to west</h2>
+    <p class="intro">The tour moves from east to west across the state. Use the buttons, or click a numbered pin.</p>
+    <div class="tour">
+      <div id="map" role="region" aria-label="Map of UT campuses in Tennessee"></div>
+      <div class="stop" aria-live="polite">
+        <div class="num" id="stopNum"></div>
+        <h3 id="stopName"></h3>
+        <div class="place" id="stopPlace"></div>
+        <p id="stopText"></p>
+        <div class="controls">
+          <button id="prev" type="button">← Previous</button>
+          <button id="next" type="button" class="primary">Next stop →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="campuses">
+  <div class="wrap">
+    <h2>The campuses</h2>
+    <p class="intro">Each card traces the institution's earlier names. A campus's identity has often been a matter of what it is called.</p>
+    <div class="cards" id="cards"></div>
+  </div>
+</section>
+
+<section id="timeline">
+  <div class="wrap">
+    <h2>Founded vs. joined UT</h2>
+    <p class="intro">Each bar starts when the institution was founded. The gray part is its history before UT. The colored part is its time in the UT system. UT Southern spent 151 years as an independent Methodist college before joining.</p>
+    <div class="chart"><svg id="timelineSvg" viewBox="0 0 900 300" role="img" aria-label="Timeline of founding and UT-joining dates for each campus"></svg>
+      <div class="legend"><span><i style="background:var(--pre)"></i>Before UT</span><span><i style="background:var(--orange)"></i>Part of UT (campus color)</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="enrollment">
+  <div class="wrap">
+    <h2>Who studies where</h2>
+    <p class="intro">Knoxville, the flagship, enrolls about 62% of all UT students. Chattanooga set a campus record in Fall 2025, passing 12,000 students for the first time.</p>
+    <div class="chart"><svg id="enrollSvg" viewBox="0 0 900 260" role="img" aria-label="Bar chart of Fall 2025 enrollment by campus"></svg></div>
+    <p class="note">Total headcount, Fall 2025, as reported by the UT System. The five campuses add up exactly to the 64,866 systemwide total.</p>
+  </div>
+</section>
+
+<section id="leadership">
+  <div class="wrap">
+    <h2>Campus leadership</h2>
+    <p class="intro">Each campus chancellor reports to UT System President Randy Boyd. Leadership changes often, so this table is dated.</p>
+    <table>
+      <thead><tr><th>Campus</th><th>Chancellor</th></tr></thead>
+      <tbody id="leaders"></tbody>
+    </table>
+    <p class="note">Current as of November 2026, based on UT System board minutes and news releases (see Sources). Check <a href="https://tennessee.edu">tennessee.edu</a> before citing.</p>
+  </div>
+</section>
+
+<section id="sources">
+  <div class="wrap">
+    <h2>Sources &amp; method</h2>
+    <p class="intro">Campus locations are approximate main-campus centroids. Basemap © OpenStreetMap contributors. The page uses no copyrighted logos or photos. Each campus is shown by a color instead.</p>
+    <ol class="sources">
+      <li>UT System, “<a href="https://tennessee.edu/news/2025/09/17/ut-reaches-record-enrollment-preparing-more-graduates-for-tennessee-jobs/">UT Reaches Record Enrollment, Preparing More Graduates for Tennessee Jobs</a>,” Sept. 17, 2025.</li>
+      <li>UT Chattanooga, “<a href="https://blogarchive.utc.edu/in-the-media/2025/09/08/utc-sets-record-with-fall-2025-enrollment/">UTC sets record with fall 2025 enrollment</a>,” Sept. 8, 2025.</li>
+      <li>UT Martin Library Special Collections, “<a href="https://library.utm.edu/special-collections/college-history">Early Origins and Hall-Moody Institute</a>.”</li>
+      <li><em>Tennessee Encyclopedia</em>, “<a href="https://tennesseeencyclopedia.net/?p=1831">University of Tennessee at Martin</a>.”</li>
+      <li>Volopedia (UT Libraries), “<a href="https://volopedia.lib.utk.edu/?p=1047">Chancellors of UT Knoxville</a>.”</li>
+      <li>UT Board of Trustees, “<a href="https://tennessee.edu/?p=5080">New Chancellors for UT Chattanooga, UT Southern Approved</a>” and “<a href="https://tennessee.edu/wp-content/uploads/2026/07/Minutes-Winter-Meeting-2-27-2026.pdf">Minutes, Winter Meeting, Feb. 27, 2026</a>.”</li>
+      <li>Wikipedia, “<a href="https://en.wikipedia.org/wiki/University_of_Tennessee_system">University of Tennessee system</a>” and linked campus articles (founding names).</li>
+    </ol>
+  </div>
+</section>
+</main>
+
+<footer><div class="wrap">Revised from the ArcGIS StoryMap “<a href="https://storymaps.arcgis.com/stories/6adf22b80945412ab673669125c3f062">UT Campuses</a>” (Oct. 2026). Built with Leaflet and OpenStreetMap.</div></footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const campuses = [
+  { id:"knox", name:"UT Knoxville", city:"Knoxville · East Tennessee", ll:[35.9545,-83.9296],
+    founded:1794, joined:1794, enroll:40421, chancellor:"Donde Plowman", role:"Flagship, land-grant research university",
+    names:[["1794","Blount College"],["1807","East Tennessee College"],["1840","East Tennessee University"],["1879","University of Tennessee"]],
+    text:"Founded as Blount College in 1794, two years before Tennessee became a state. It is the system's flagship and land-grant campus. Of its 40,421 students in Fall 2025, 32,041 were undergraduates, and 63% of those undergraduates are from Tennessee." },
+  { id:"chat", name:"UT Chattanooga", city:"Chattanooga · Southeast Tennessee", ll:[35.0461,-85.2986],
+    founded:1886, joined:1969, enroll:12060, chancellor:"Lori Mann Bruce", role:"Metropolitan comprehensive university",
+    names:[["1886","Chattanooga University"],["1889","Grant University"],["1907","University of Chattanooga"],["1969","UT Chattanooga"]],
+    text:"Opened in 1886 as Chattanooga University. It was a private school for most of a century, then merged with Chattanooga City College to join UT in 1969. Its Fall 2025 enrollment of 12,060 was the largest in campus history." },
+  { id:"south", name:"UT Southern", city:"Pulaski · Middle Tennessee", ll:[35.1972,-87.0336],
+    founded:1870, joined:2021, enroll:1132, chancellor:"Melinda Arnold", role:"Regional university serving southern Middle Tennessee",
+    names:[["1870","Martin Female College"],["1908","Martin College"],["1986","Martin Methodist College"],["2021","UT Southern"]],
+    text:"Founded in Pulaski in 1870 as a Methodist women's college. It became the system's newest campus in 2021, after 151 years as an independent school. Joining UT brought public tuition rates to students in south-central Tennessee." },
+  { id:"martin", name:"UT Martin", city:"Martin · Northwest Tennessee", ll:[36.3426,-88.8636],
+    founded:1900, joined:1927, enroll:8096, chancellor:"Yancy Freeman", role:"Primary campus for rural West Tennessee",
+    names:[["1900","Hall-Moody Institute (Baptist)"],["1927","UT Junior College"],["1951","UT Martin Branch"],["1967","UT Martin"]],
+    text:"Grew out of Hall-Moody Institute, a Baptist school. When Hall-Moody closed, the state reopened the campus in 1927 as the University of Tennessee Junior College. It became a four-year branch in 1951 and took the name UT Martin in 1967." },
+  { id:"memphis", name:"UT Health Science Center", city:"Memphis · West Tennessee", ll:[35.1408,-90.0331],
+    founded:1911, joined:1911, enroll:3157, chancellor:"Peter Buckley", role:"Statewide academic health science center",
+    names:[["1911","UT medical departments consolidated in Memphis"],["Today","UTHSC: medicine, dentistry, pharmacy, nursing & more"]],
+    text:"UT moved its medical programs to Memphis in 1911. UTHSC is the system's graduate and professional health campus. Its colleges train many of Tennessee's physicians, dentists, and pharmacists, and it has clinical sites across the state." }
+];
+campuses.forEach(c => c.color = css("--"+c.id));
+
+// ----- map tour (east to west order already) -----
+const map = L.map("map",{scrollWheelZoom:false}).setView([35.85,-86.4],7);
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:18,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
+const markers = campuses.map((c,i)=>{
+  const m = L.marker(c.ll,{icon:L.divIcon({className:"",html:`<div class="pin" style="background:${c.color}">${i+1}</div>`,iconSize:[30,30],iconAnchor:[15,15]}),title:c.name,keyboard:true}).addTo(map);
+  m.on("click",()=>go(i));
+  return m;
+});
+L.polyline(campuses.map(c=>c.ll),{color:css("--muted"),weight:2,dashArray:"4 6",opacity:.6}).addTo(map);
+let cur=-1;
+function go(i){
+  cur=(i+campuses.length)%campuses.length; const c=campuses[cur];
+  stopNum.textContent=`Stop ${cur+1} of ${campuses.length}`;
+  stopName.textContent=c.name; stopName.style.color=c.color;
+  stopPlace.textContent=c.city; stopText.textContent=c.text;
+  markers.forEach((m,j)=>m.getElement()?.firstChild.classList.toggle("active",j===cur));
+  map.flyTo(c.ll,11,{duration:1.2});
+}
+function overview(){ cur=-1; stopNum.textContent="Start";
+  stopName.textContent="Across Tennessee"; stopName.style.color="";
+  stopPlace.textContent="5 campuses · about 350 miles end to end";
+  stopText.textContent="The pins run from Knoxville in the east to Memphis on the Mississippi River. Press Next to visit each campus.";
+  map.fitBounds(L.latLngBounds(campuses.map(c=>c.ll)).pad(0.15));
+  markers.forEach(m=>m.getElement()?.firstChild.classList.remove("active"));
+}
+next.onclick=()=>cur===campuses.length-1?overview():go(cur+1);
+prev.onclick=()=>cur<=0?(cur===0?overview():go(campuses.length-1)):go(cur-1);
+overview();
+
+// ----- cards -----
+cards.innerHTML = campuses.map(c=>`
+  <article class="card" style="--c:${c.color}">
+    <h3>${c.name}</h3><div class="sub">${c.city}</div>
+    <p>${c.text}</p>
+    <div class="names">${c.names.map(([y,n])=>`<div><span>${y}</span>${n}</div>`).join("")}</div>
+    <dl><dt>Role</dt><dd>${c.role}</dd><dt>Founded</dt><dd>${c.founded}</dd><dt>Joined UT</dt><dd>${c.joined===c.founded?"From founding":c.joined}</dd><dt>Fall 2025</dt><dd>${c.enroll.toLocaleString()} students</dd></dl>
+  </article>`).join("");
+
+leaders.innerHTML = campuses.map(c=>`<tr><td><span style="color:${c.color}">●</span> ${c.name}</td><td>${c.chancellor}</td></tr>`).join("");
+
+// ----- timeline -----
+(function(){
+  const s=document.getElementById("timelineSvg"), W=900, L0=200, R=880, y0=1790, y1=2030;
+  const x=y=>L0+(y-y0)/(y1-y0)*(R-L0);
+  const order=[...campuses].sort((a,b)=>a.founded-b.founded);
+  let h="";
+  for(let y=1800;y<=2025;y+=25){ h+=`<line x1="${x(y)}" x2="${x(y)}" y1="20" y2="260" stroke="var(--line)"/><text x="${x(y)}" y="282" text-anchor="middle">${y}</text>`; }
+  order.forEach((c,i)=>{
+    const yy=40+i*46;
+    h+=`<text class="lbl" x="0" y="${yy+5}">${c.name}</text>`;
+    if(c.joined>c.founded) h+=`<rect x="${x(c.founded)}" y="${yy-7}" width="${x(c.joined)-x(c.founded)}" height="14" rx="7" fill="var(--pre)"/>`;
+    h+=`<rect x="${x(c.joined)}" y="${yy-7}" width="${x(2026)-x(c.joined)}" height="14" rx="7" fill="${c.color}"/>`;
+    h+=`<circle cx="${x(c.founded)}" cy="${yy}" r="5" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/>`;
+    h+=`<text x="${x(c.founded)}" y="${yy-12}" text-anchor="middle">${c.founded}</text>`;
+    if(c.joined>c.founded) h+=`<text x="${x(c.joined)}" y="${yy-12}" text-anchor="middle">${c.joined}</text>`;
+  });
+  s.innerHTML=h;
+})();
+
+// ----- enrollment -----
+(function(){
+  const s=document.getElementById("enrollSvg"), L0=200, R=800, max=45000;
+  const order=[...campuses].sort((a,b)=>b.enroll-a.enroll), tot=order.reduce((t,c)=>t+c.enroll,0);
+  let h="";
+  for(let v=0;v<=40000;v+=10000){const xx=L0+v/max*(R-L0); h+=`<line x1="${xx}" x2="${xx}" y1="10" y2="230" stroke="var(--line)"/><text x="${xx}" y="250" text-anchor="middle">${v?v/1000+"k":"0"}</text>`;}
+  order.forEach((c,i)=>{const yy=20+i*42, w=c.enroll/max*(R-L0);
+    h+=`<text class="lbl" x="0" y="${yy+19}">${c.name}</text><rect x="${L0}" y="${yy+4}" width="${w}" height="24" rx="4" fill="${c.color}"/>`+
+       `<text x="${L0+w+8}" y="${yy+21}" style="fill:var(--ink)">${c.enroll.toLocaleString()} · ${(c.enroll/tot*100).toFixed(1)}%</text>`;});
+  s.innerHTML=h;
+})();
+</script>
+</body>
+</html>
