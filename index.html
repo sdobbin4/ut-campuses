@@ -77,6 +77,9 @@ button:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
 .names div{margin:2px 0}
 .names span{color:var(--muted);display:inline-block;min-width:92px}
 /* charts */
+.seg{display:flex;gap:8px;margin-top:20px;flex-wrap:wrap}
+.seg button[aria-pressed="true"]{background:var(--orange);border-color:var(--orange);color:#fff}
+@media (prefers-color-scheme: dark){ button.primary,.seg button[aria-pressed="true"]{color:#1d1d1f} }
 .chart{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;margin-top:24px;overflow-x:auto}
 .chart svg{display:block;width:100%;min-width:560px;height:auto}
 .chart text{fill:var(--muted);font:12px Inter,sans-serif}
@@ -104,7 +107,7 @@ footer{padding:36px 0 60px;font-size:13px;color:var(--muted)}
     <div class="kicker">A digital humanities map project</div>
     <h1>One University, Five Campuses</h1>
     <p class="lede">The University of Tennessee System stretches about 350 miles, from the Smoky Mountain foothills to the Mississippi River. Each of its five campuses began as something else: a frontier college, a Methodist women's school, a Baptist institute. This project maps where they are, when they joined UT, and how many students they serve today.</p>
-    <div class="byline">By Shanquez Dobbins · Revised November 2026 · Data as of Fall 2025</div>
+    <div class="byline">By Shanquez Dobbins · Revised November 2026 · Data as of Fall 2026</div>
     <noscript><p class="noscript">This page needs JavaScript for the map, campus cards, and charts. The sources list at the bottom still works without it.</p></noscript>
   </div>
 </header>
@@ -116,6 +119,7 @@ footer{padding:36px 0 60px;font-size:13px;color:var(--muted)}
     <a href="#campuses">Campuses</a>
     <a href="#timeline">Timeline</a>
     <a href="#enrollment">Enrollment</a>
+    <a href="#growth">Growth</a>
     <a href="#leadership">Leadership</a>
     <a href="#sources">Sources</a>
   </div>
@@ -127,7 +131,7 @@ footer{padding:36px 0 60px;font-size:13px;color:var(--muted)}
     <h2>The system at a glance</h2>
     <p class="intro">UT is a statewide system. Five campuses each have their own chancellor, all reporting to the UT System president. Only Knoxville was part of UT from the start. Each of the other four joined later, by merger, by state takeover, or by acquisition, between 1911 and 2021.</p>
     <div class="stats">
-      <div class="stat"><b>64,866</b><span>students systemwide, Fall 2025 (a record)</span></div>
+      <div class="stat"><b>65,618</b><span>students systemwide, Fall 2026 (a record)</span></div>
       <div class="stat"><b>5</b><span>campuses with their own chancellors</span></div>
       <div class="stat"><b>1794</b><span>oldest root: Blount College, Knoxville</span></div>
       <div class="stat"><b>2021</b><span>newest member: UT Southern, Pulaski</span></div>
@@ -176,9 +180,22 @@ footer{padding:36px 0 60px;font-size:13px;color:var(--muted)}
 <section id="enrollment">
   <div class="wrap">
     <h2>Who studies where</h2>
-    <p class="intro">Knoxville, the flagship, enrolls about 62% of all UT students. Chattanooga set a campus record in Fall 2025, passing 12,000 students for the first time.</p>
-    <div class="chart"><svg id="enrollSvg" viewBox="0 0 900 260" role="img" aria-label="Bar chart of Fall 2025 enrollment by campus"></svg></div>
-    <p class="note">Total headcount, Fall 2025, as reported by the UT System. The five campuses add up exactly to the 64,866 systemwide total.</p>
+    <p class="intro">Knoxville, the flagship, enrolls about 63% of all UT students. Chattanooga dipped 2.1% in Fall 2026, to the second-highest total in its history, after a record 12,060 in 2025.</p>
+    <div class="chart"><svg id="enrollSvg" viewBox="0 0 900 260" role="img" aria-label="Bar chart of Fall 2026 enrollment by campus"></svg></div>
+    <p class="note">Total headcount, Fall 2026, as reported by the UT System. The five campuses add up exactly to the 65,618 systemwide total.</p>
+  </div>
+</section>
+
+<section id="growth">
+  <div class="wrap">
+    <h2>Five years of growth</h2>
+    <p class="intro">All five campuses grew between Fall 2022 and Fall 2026, but at very different rates. Knoxville, Martin, and Southern each grew by about a fifth. Chattanooga grew 5%, and the Health Science Center less than 1%. Switch to “Growth since 2022” to compare campuses of very different sizes.</p>
+    <div class="seg" role="group" aria-label="Chart view">
+      <button type="button" id="viewCount" aria-pressed="true">Students</button>
+      <button type="button" id="viewGrowth" aria-pressed="false">Growth since 2022</button>
+    </div>
+    <div class="chart"><svg id="growthSvg" viewBox="0 0 900 320" role="img" aria-label="Line chart of fall enrollment by campus, 2022 to 2026"></svg></div>
+    <p class="note">Total headcount each fall, from UT System enrollment releases. *UTHSC’s Fall 2024 figure (3,101) is not stated directly; it is implied by UT’s reported 1.8% increase to 3,157 in 2025 and by the 62,208 Fall 2024 total.</p>
   </div>
 </section>
 
@@ -199,7 +216,10 @@ footer{padding:36px 0 60px;font-size:13px;color:var(--muted)}
     <h2>Sources &amp; method</h2>
     <p class="intro">Campus locations are approximate main-campus centroids. Basemap © OpenStreetMap contributors. The page uses no copyrighted logos or photos. Each campus is shown by a color instead.</p>
     <ol class="sources">
+      <li>UT System, “<a href="https://tennessee.edu/news/2026/09/25/ut-system-enrollment-continues-to-grow-as-tennesseans-show-confidence-in-value-of-higher-education/">UT System Enrollment Continues to Grow as Tennesseans Show Confidence in Value of Higher Education</a>,” Sept. 25, 2026.</li>
       <li>UT System, “<a href="https://tennessee.edu/news/2025/09/17/ut-reaches-record-enrollment-preparing-more-graduates-for-tennessee-jobs/">UT Reaches Record Enrollment, Preparing More Graduates for Tennessee Jobs</a>,” Sept. 17, 2025.</li>
+      <li>UT System, “<a href="https://tennessee.edu/?p=1568">University of Tennessee Celebrates Five Years of Record Enrollment</a>,” Sept. 13, 2024.</li>
+      <li>UT System, “<a href="https://tennessee.edu/news/2023/10/05/university-of-tennessee-system-celebrates-record-enrollment-gains-in-graduation-rates/">University of Tennessee System Celebrates Record Enrollment, Gains in Graduation Rates</a>,” Oct. 5, 2023 (Fall 2023 and Fall 2022 figures).</li>
       <li>UT Chattanooga, “<a href="https://blogarchive.utc.edu/in-the-media/2025/09/08/utc-sets-record-with-fall-2025-enrollment/">UTC sets record with fall 2025 enrollment</a>,” Sept. 8, 2025.</li>
       <li>UT Martin Library Special Collections, “<a href="https://library.utm.edu/special-collections/college-history">Early Origins and Hall-Moody Institute</a>.”</li>
       <li><em>Tennessee Encyclopedia</em>, “<a href="https://tennesseeencyclopedia.net/?p=1831">University of Tennessee at Martin</a>.”</li>
@@ -218,27 +238,27 @@ footer{padding:36px 0 60px;font-size:13px;color:var(--muted)}
 const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 const campuses = [
   { id:"knox", name:"UT Knoxville", city:"Knoxville · East Tennessee", ll:[35.9545,-83.9296],
-    founded:1794, joined:1794, enroll:40421, chancellor:"Donde Plowman", role:"Flagship, land-grant research university",
+    founded:1794, joined:1794, history:{2022:33805,2023:36304,2024:38728,2025:40421,2026:41287}, chancellor:"Donde Plowman", role:"Flagship, land-grant research university",
     names:[["1794","Blount College"],["1807","East Tennessee College"],["1840","East Tennessee University"],["1879","University of Tennessee"]],
-    text:"Founded as Blount College in 1794, two years before Tennessee became a state. It is the system's flagship and land-grant campus. Of its 40,421 students in Fall 2025, 32,041 were undergraduates, and 63% of those undergraduates are from Tennessee." },
+    text:"Founded as Blount College in 1794, two years before Tennessee became a state. It is the system's flagship and land-grant campus. Its 41,287 students in Fall 2026 included a record 7,205 first-year students." },
   { id:"chat", name:"UT Chattanooga", city:"Chattanooga · Southeast Tennessee", ll:[35.0461,-85.2986],
-    founded:1886, joined:1969, enroll:12060, chancellor:"Lori Mann Bruce", role:"Metropolitan comprehensive university",
+    founded:1886, joined:1969, history:{2022:11283,2023:11380,2024:11834,2025:12060,2026:11809}, chancellor:"Lori Mann Bruce", role:"Metropolitan comprehensive university",
     names:[["1886","Chattanooga University"],["1889","Grant University"],["1907","University of Chattanooga"],["1969","UT Chattanooga"]],
     text:"Opened in 1886 as Chattanooga University. It was a private school for most of a century, then merged with Chattanooga City College to join UT in 1969. Its Fall 2025 enrollment of 12,060 was the largest in campus history." },
   { id:"south", name:"UT Southern", city:"Pulaski · Middle Tennessee", ll:[35.1972,-87.0336],
-    founded:1870, joined:2021, enroll:1132, chancellor:"Melinda Arnold", role:"Regional university serving southern Middle Tennessee",
+    founded:1870, joined:2021, history:{2022:934,2023:978,2024:1046,2025:1132,2026:1110}, chancellor:"Melinda Arnold", role:"Regional university serving southern Middle Tennessee",
     names:[["1870","Martin Female College"],["1908","Martin College"],["1986","Martin Methodist College"],["2021","UT Southern"]],
     text:"Founded in Pulaski in 1870 as a Methodist women's college. It became the system's newest campus in 2021, after 151 years as an independent school. Joining UT brought public tuition rates to students in south-central Tennessee." },
   { id:"martin", name:"UT Martin", city:"Martin · Northwest Tennessee", ll:[36.3426,-88.8636],
-    founded:1900, joined:1927, enroll:8096, chancellor:"Yancy Freeman", role:"Primary campus for rural West Tennessee",
+    founded:1900, joined:1927, history:{2022:6868,2023:6941,2024:7499,2025:8096,2026:8245}, chancellor:"Yancy Freeman", role:"Primary campus for rural West Tennessee",
     names:[["1900","Hall-Moody Institute (Baptist)"],["1927","UT Junior College"],["1951","UT Martin Branch"],["1967","UT Martin"]],
     text:"Grew out of Hall-Moody Institute, a Baptist school. When Hall-Moody closed, the state reopened the campus in 1927 as the University of Tennessee Junior College. It became a four-year branch in 1951 and took the name UT Martin in 1967." },
   { id:"memphis", name:"UT Health Science Center", city:"Memphis · West Tennessee", ll:[35.1408,-90.0331],
-    founded:1911, joined:1911, enroll:3157, chancellor:"Peter Buckley", role:"Statewide academic health science center",
+    founded:1911, joined:1911, history:{2022:3142,2023:3123,2024:3101,2025:3157,2026:3167}, chancellor:"Peter Buckley", role:"Statewide academic health science center",
     names:[["1911","UT medical departments consolidated in Memphis"],["Today","UTHSC: medicine, dentistry, pharmacy, nursing & more"]],
     text:"UT moved its medical programs to Memphis in 1911. UTHSC is the system's graduate and professional health campus. Its colleges train many of Tennessee's physicians, dentists, and pharmacists, and it has clinical sites across the state." }
 ];
-campuses.forEach(c => c.color = css("--"+c.id));
+campuses.forEach(c => { c.color = css("--"+c.id); c.enroll = c.history[2026]; });
 
 // ----- map tour (east to west order already) -----
 const map = L.map("map",{scrollWheelZoom:false}).setView([35.85,-86.4],7);
@@ -281,7 +301,7 @@ cards.innerHTML = campuses.map(c=>`
     <h3>${c.name}</h3><div class="sub">${c.city}</div>
     <p>${c.text}</p>
     <div class="names">${c.names.map(([y,n])=>`<div><span>${y}</span>${n}</div>`).join("")}</div>
-    <dl><dt>Role</dt><dd>${c.role}</dd><dt>Founded</dt><dd>${c.founded}</dd><dt>Joined UT</dt><dd>${c.joined===c.founded?"From founding":c.joined}</dd><dt>Fall 2025</dt><dd>${c.enroll.toLocaleString()} students</dd></dl>
+    <dl><dt>Role</dt><dd>${c.role}</dd><dt>Founded</dt><dd>${c.founded}</dd><dt>Joined UT</dt><dd>${c.joined===c.founded?"From founding":c.joined}</dd><dt>Fall 2026</dt><dd>${c.enroll.toLocaleString()} students</dd></dl>
   </article>`).join("");
 
 leaders.innerHTML = campuses.map(c=>`<tr><td><span style="color:${c.color}">●</span> ${c.name}</td><td>${c.chancellor}</td></tr>`).join("");
@@ -316,8 +336,53 @@ leaders.innerHTML = campuses.map(c=>`<tr><td><span style="color:${c.color}">●<
     h+=`<text class="lbl" x="0" y="${yy+19}">${c.name}</text><rect x="${L0}" y="${yy+4}" width="${w}" height="24" rx="4" fill="${c.color}"/>`+
        `<text x="${L0+w+8}" y="${yy+21}" style="fill:var(--ink)">${c.enroll.toLocaleString()} · ${(c.enroll/tot*100).toFixed(1)}%</text>`;});
   s.innerHTML=h;
-  s.insertAdjacentHTML("afterend",`<div class="sr-only"><table><caption>Fall 2025 enrollment by campus</caption><tr><th>Campus</th><th>Students</th><th>Share</th></tr>${order.map(c=>`<tr><td>${c.name}</td><td>${c.enroll.toLocaleString()}</td><td>${(c.enroll/tot*100).toFixed(1)}%</td></tr>`).join("")}</table></div>`);
+  s.insertAdjacentHTML("afterend",`<div class="sr-only"><table><caption>Fall 2026 enrollment by campus</caption><tr><th>Campus</th><th>Students</th><th>Share</th></tr>${order.map(c=>`<tr><td>${c.name}</td><td>${c.enroll.toLocaleString()}</td><td>${(c.enroll/tot*100).toFixed(1)}%</td></tr>`).join("")}</table></div>`);
 })();
+
+// ----- growth over time -----
+const YEARS=[2022,2023,2024,2025,2026];
+const SHORT={knox:"Knoxville",chat:"Chattanooga",martin:"Martin",memphis:"UTHSC",south:"Southern"};
+const growthSvg=document.getElementById("growthSvg");
+const est=(c,y)=>c.id==="memphis"&&y===2024?"*":"";
+function drawGrowth(mode){
+  const X0=60, X1=740, Y0=20, Y1=280, LX=752;
+  const x=i=>X0+i*(X1-X0)/(YEARS.length-1);
+  const pct=(c,y)=>(c.history[y]/c.history[2022]-1)*100;
+  const [lo,hi,step]=mode==="growth"?[-5,25,5]:[0,45000,10000];
+  const y=v=>Y1-(v-lo)/(hi-lo)*(Y1-Y0);
+  const val=(c,yr)=>mode==="growth"?pct(c,yr):c.history[yr];
+  const fmtPct=p=>(p>=0?"+":"")+p.toFixed(1)+"%";
+  let h="";
+  for(let v=lo;v<=(mode==="growth"?hi:40000);v+=step){
+    const yy=y(v), zero=mode==="growth"&&v===0;
+    h+=`<line x1="${X0}" x2="${X1}" y1="${yy}" y2="${yy}" stroke="${zero?"var(--muted)":"var(--line)"}"/>`+
+       `<text x="${X0-8}" y="${yy+4}" text-anchor="end">${mode==="growth"?(v>0?"+":"")+v+"%":(v?v/1000+"k":"0")}</text>`;
+  }
+  YEARS.forEach((yr,i)=>{h+=`<text x="${x(i)}" y="${Y1+22}" text-anchor="middle">${yr}</text>`;});
+  const labels=[];
+  campuses.forEach(c=>{
+    h+=`<polyline fill="none" stroke="${c.color}" stroke-width="2.5" stroke-linejoin="round" points="${YEARS.map((yr,i)=>x(i)+","+y(val(c,yr))).join(" ")}"/>`;
+    YEARS.forEach((yr,i)=>{
+      h+=`<circle cx="${x(i)}" cy="${y(val(c,yr))}" r="4" fill="${c.color}" stroke="var(--surface)" stroke-width="1.5"><title>${c.name}, Fall ${yr}: ${c.history[yr].toLocaleString()}${est(c,yr)} students (${fmtPct(pct(c,yr))} since 2022)</title></circle>`;
+    });
+    const last=val(c,2026);
+    labels.push({c, y:y(last)+4, text:`${SHORT[c.id]} ${mode==="growth"?fmtPct(last):c.history[2026].toLocaleString()}`});
+  });
+  labels.sort((a,b)=>a.y-b.y).forEach((l,i,arr)=>{ if(i&&l.y-arr[i-1].y<14) l.y=arr[i-1].y+14; });
+  labels.forEach(l=>{h+=`<text class="end lbl" x="${LX}" y="${l.y}" style="fill:${l.c.color}">${l.text}</text>`;});
+  growthSvg.innerHTML=h;
+  growthSvg.setAttribute("aria-label", mode==="growth"
+    ? "Line chart of percent enrollment growth since Fall 2022, by campus"
+    : "Line chart of fall enrollment by campus, 2022 to 2026");
+  viewCount.setAttribute("aria-pressed", mode!=="growth");
+  viewGrowth.setAttribute("aria-pressed", mode==="growth");
+}
+viewCount.onclick=()=>drawGrowth("count");
+viewGrowth.onclick=()=>drawGrowth("growth");
+drawGrowth("count");
+growthSvg.insertAdjacentHTML("afterend",`<div class="sr-only"><table><caption>Fall enrollment by campus, 2022 to 2026</caption><tr><th>Campus</th>${YEARS.map(y=>`<th>${y}</th>`).join("")}</tr>`+
+  campuses.map(c=>`<tr><td>${c.name}</td>${YEARS.map(y=>`<td>${c.history[y].toLocaleString()}${est(c,y)}</td>`).join("")}</tr>`).join("")+
+  `<tr><td>Total</td>${YEARS.map(y=>`<td>${campuses.reduce((t,c)=>t+c.history[y],0).toLocaleString()}</td>`).join("")}</tr></table></div>`);
 </script>
 </body>
 </html>
