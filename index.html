@@ -225,6 +225,7 @@ footer{padding:36px 0 60px;font-size:13px;color:var(--muted)}
       <li><em>Tennessee Encyclopedia</em>, “<a href="https://tennesseeencyclopedia.net/?p=1831">University of Tennessee at Martin</a>.”</li>
       <li>Volopedia (UT Libraries), “<a href="https://volopedia.lib.utk.edu/?p=1047">Chancellors of UT Knoxville</a>.”</li>
       <li>UT Board of Trustees, “<a href="https://tennessee.edu/?p=5080">New Chancellors for UT Chattanooga, UT Southern Approved</a>” and “<a href="https://tennessee.edu/wp-content/uploads/2026/07/Minutes-Winter-Meeting-2-27-2026.pdf">Minutes, Winter Meeting, Feb. 27, 2026</a>.”</li>
+      <li>UT Health Science Center, “<a href="https://www.uthsc.edu/about/">About UTHSC</a>” (1911 founding of the Memphis campus).</li>
       <li>Wikipedia, “<a href="https://en.wikipedia.org/wiki/University_of_Tennessee_system">University of Tennessee system</a>” and linked campus articles (founding names).</li>
     </ol>
   </div>
@@ -255,8 +256,8 @@ const campuses = [
     text:"Grew out of Hall-Moody Institute, a Baptist school. When Hall-Moody closed, the state reopened the campus in 1927 as the University of Tennessee Junior College. It became a four-year branch in 1951 and took the name UT Martin in 1967." },
   { id:"memphis", name:"UT Health Science Center", city:"Memphis · West Tennessee", ll:[35.1408,-90.0331],
     founded:1911, joined:1911, history:{2022:3142,2023:3123,2024:3101,2025:3157,2026:3167}, chancellor:"Peter Buckley", role:"Statewide academic health science center",
-    names:[["1911","UT medical departments consolidated in Memphis"],["Today","UTHSC: medicine, dentistry, pharmacy, nursing & more"]],
-    text:"UT moved its medical programs to Memphis in 1911. UTHSC is the system's graduate and professional health campus. Its colleges train many of Tennessee's physicians, dentists, and pharmacists, and it has clinical sites across the state." }
+    names:[["1911","UT opens its Memphis health science campus"],["Today","UTHSC: medicine, dentistry, pharmacy, nursing & more"]],
+    text:"UT launched its Memphis campus in 1911 and devoted it entirely to health science education and research. UTHSC is the system's graduate and professional health campus. Its colleges train many of Tennessee's physicians, dentists, and pharmacists, and it has clinical sites across the state." }
 ];
 campuses.forEach(c => { c.color = css("--"+c.id); c.enroll = c.history[2026]; });
 
